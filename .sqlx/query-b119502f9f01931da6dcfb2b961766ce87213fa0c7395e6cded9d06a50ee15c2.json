@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "CALL add_car_sale($1, $2, $3)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b119502f9f01931da6dcfb2b961766ce87213fa0c7395e6cded9d06a50ee15c2"
+}

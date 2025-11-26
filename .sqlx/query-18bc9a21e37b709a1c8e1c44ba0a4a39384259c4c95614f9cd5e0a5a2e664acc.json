@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT\n            o.id,\n            o.car_id,\n            o.check_num,\n            o.quantity,\n            o.sold_at,\n            c.price,\n            c.name as car_name,\n            b.name as car_brand,\n            cc.name as centre_name,\n            o.quantity * c.price as \"total!\"\n        FROM orders o\n        JOIN cars c ON o.car_id = c.id\n        JOIN brand b ON c.brand_id = b.id\n        JOIN carcentres cc ON c.car_centre_id = cc.id",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "car_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "check_num",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "quantity",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "sold_at",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 5,
+        "name": "price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "car_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "car_brand",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "centre_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 9,
+        "name": "total!",
+        "type_info": "Numeric"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "18bc9a21e37b709a1c8e1c44ba0a4a39384259c4c95614f9cd5e0a5a2e664acc"
+}
