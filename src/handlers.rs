@@ -193,9 +193,9 @@ pub async fn get_cars_cheaper_than(
     let cars = sqlx::query_as!(
         CheapCarRow,
         r#"SELECT
-            id          AS "id!",
-            model       AS "name!",
-            price       AS "price!",
+            id as "id!",
+            name as "name!",
+            price as "price!",
             description
         FROM get_cars_cheaper_than_price($1)"#,
         price
