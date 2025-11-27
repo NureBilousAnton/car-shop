@@ -68,7 +68,8 @@ pub struct AddSaleRequest {
 #[utoipa::path(post, path = "", request_body = AddSaleRequest, tag = SALES_TAG,
     responses(
         (status = OK, description = "Sale registered successfully"),
-        (status = BAD_REQUEST, description = "Business Logic Error")
+        (status = BAD_REQUEST, description = "Business Logic Error"),
+        (status = NOT_FOUND, description = "Car was not found")
     )
 )]
 pub async fn add_sale(

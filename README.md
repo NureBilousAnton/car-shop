@@ -12,12 +12,19 @@ docker exec srbd3 psql -U postgres -c "CREATE DATABASE car_shop;"
 docker cp sql/init.sql srbd3:/var/lib/postgresql/data/
 docker exec srbd3 psql -U postgres -d car_shop -f /var/lib/postgresql/data/init.sql
 
-# Environment variables
+# Get environment variables (optional)
 source .envrc
 
-# Compile and execute the program
+# Compile and execute the backend
 cargo run
+
+# Bootstrap and start the website
+cd frontend
+npm install
+npm run dev
 ```
 
-Open <http://127.0.0.1:3000/swagger-ui> in your browser.
+- Website is at <http://localhost:3002>
+- Swagger is at <http://localhost:3000/swagger-ui>
+- OpenAPI spec is at <http://localhost:3000/apidoc/openapi.json>
 

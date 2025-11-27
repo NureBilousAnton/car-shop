@@ -1,0 +1,5 @@
+{
+  "name": "CarShop Dashboard",
+  "description": "A RESTful client for the CarShop API demonstrating stored procedures, functions, and error handling.",
+  "requestFramePermissions": []
+}

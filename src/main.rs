@@ -1,8 +1,10 @@
 #![allow(clippy::needless_for_each)] // OpenApi macro
 
+use axum::http::HeaderValue;
 use listenfd::ListenFd;
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
+use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use utoipa::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
@@ -55,6 +57,12 @@ async fn main() {
         .nest("/api/cars", cars::router())
         .nest("/api/sales", sales::router())
         .with_state(pool)
+        .layer(
+            CorsLayer::new()
+                .allow_origin("http://localhost:3002".parse::<HeaderValue>().unwrap())
+                .allow_methods(Any)
+                .allow_headers(Any),
+        )
         .split_for_parts();
     let router = router.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api));
 
