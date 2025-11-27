@@ -89,7 +89,8 @@ BEGIN
     LIMIT 1;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION 'Не знайдено жодного автомобіля, назва котрого містить "%".', p_car_name;
+        RAISE EXCEPTION 'Не знайдено жодного автомобіля, назва котрого містить "%".', p_car_name
+            USING ERRCODE = 'P0002'; -- no_data_found
     END IF;
 
     IF p_check_num IS NULL THEN

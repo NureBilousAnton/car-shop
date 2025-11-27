@@ -1,28 +1,32 @@
 use axum::{
-    Json,
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use serde_json::json;
 
 /// Custom application error type
-pub enum AppError {
+pub enum Error {
     /// Standard database error
     Sqlx(sqlx::Error),
-    /// Resource not found (for manual trigger)
+    /// Resource not found
     NotFound(String),
 }
 
-// Allow converting sqlx errors directly into AppError
-impl From<sqlx::Error> for AppError {
-    fn from(inner: sqlx::Error) -> Self {
-        Self::Sqlx(inner)
+impl From<sqlx::Error> for Error {
+    fn from(err: sqlx::Error) -> Self {
+        if let sqlx::Error::Database(db_err) = &err
+            && let Some(code) = db_err.code()
+            && code.as_ref() == "P0002"
+        {
+            Self::NotFound(db_err.message().to_string())
+        } else {
+            Self::Sqlx(err)
+        }
     }
 }
 
-impl IntoResponse for AppError {
+impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        let (status, error_message) = match self {
+        match self {
             Self::Sqlx(err) => {
                 match err {
                     sqlx::Error::Database(db_err) => {
@@ -43,12 +47,7 @@ impl IntoResponse for AppError {
                 }
             }
             Self::NotFound(msg) => (StatusCode::NOT_FOUND, msg),
-        };
-
-        let body = Json(json!({
-            "error": error_message
-        }));
-
-        (status, body).into_response()
+        }
+        .into_response()
     }
 }

@@ -1,22 +1,30 @@
-mod error;
-mod handlers;
-mod models;
-mod openapi;
+#![allow(clippy::needless_for_each)] // OpenApi macro
 
-use axum::{
-    Router,
-    routing::{get, post},
-};
 use listenfd::ListenFd;
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use utoipa::OpenApi;
+use utoipa_axum::router::OpenApiRouter;
 use utoipa_swagger_ui::SwaggerUi;
 
 use std::time::Duration;
 
-use crate::openapi::ApiDoc;
+mod cars;
+mod error;
+mod sales;
+
+pub type Result<T, E = error::Error> = std::result::Result<T, E>;
+
+const CAR_TAG: &str = "Cars";
+const SALES_TAG: &str = "Sales";
+
+#[derive(OpenApi)]
+#[openapi(tags(
+    (name = CAR_TAG, description = "Car API Endpoints"),
+    (name = SALES_TAG, description = "Sale API Endpoints"),
+))]
+pub struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
@@ -42,22 +50,13 @@ async fn main() {
 
     tracing::info!("Connected to database at {}", db_url);
 
-    // Router
-    let app = Router::new()
-        .route("/cars", get(handlers::get_cars))
-        .route("/sales", get(handlers::get_sales))
-        .route("/cars/{id}/details", get(handlers::get_car_details))
-        .route("/sales", post(handlers::add_sale))
-        .route(
-            "/stats/cheaper-than-avg",
-            get(handlers::get_stats_cheaper_than_avg),
-        )
-        .route(
-            "/cars/cheaper-than/{price}",
-            get(handlers::get_cars_cheaper_than),
-        )
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
-        .with_state(pool);
+    // OpenAPI and Router
+    let (router, api) = OpenApiRouter::with_openapi(ApiDoc::openapi())
+        .nest("/api/cars", cars::router())
+        .nest("/api/sales", sales::router())
+        .with_state(pool)
+        .split_for_parts();
+    let router = router.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api));
 
     // Run Server with support for systemfd/cargo-watch
     let mut listenfd = ListenFd::from_env();
@@ -73,5 +72,5 @@ async fn main() {
     tracing::info!("Listening on {addr}");
     tracing::info!("Swagger UI available at http://{addr}/swagger-ui");
 
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, router).await.unwrap();
 }

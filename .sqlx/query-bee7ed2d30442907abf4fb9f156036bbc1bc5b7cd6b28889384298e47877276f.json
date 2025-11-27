@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT\n            c.id, c.name,\n            b.name as brand_name,\n            b.country_code as brand_country,\n            cc.name as center_name,\n            c.price, c.quantity, c.description\n        FROM cars c\n        JOIN brand b ON c.brand_id = b.id\n        JOIN carcentres cc ON c.car_centre_id = cc.id",
+  "query": "SELECT\n            c.id, c.name,\n            b.name as brand,\n            b.country_code as country,\n            cc.name as center,\n            c.price, c.quantity, c.description\n        FROM cars c\n        JOIN brand b ON c.brand_id = b.id\n        JOIN carcentres cc ON c.car_centre_id = cc.id\n        WHERE c.id = $1",
   "describe": {
     "columns": [
       {
@@ -15,17 +15,17 @@
       },
       {
         "ordinal": 2,
-        "name": "brand_name",
+        "name": "brand",
         "type_info": "Varchar"
       },
       {
         "ordinal": 3,
-        "name": "brand_country",
+        "name": "country",
         "type_info": "Varchar"
       },
       {
         "ordinal": 4,
-        "name": "center_name",
+        "name": "center",
         "type_info": "Varchar"
       },
       {
@@ -45,7 +45,9 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4"
+      ]
     },
     "nullable": [
       false,
@@ -58,5 +60,5 @@
       true
     ]
   },
-  "hash": "fd861f7acd9bada9db06c8db1ec4b6c3151d8b62dcde405536386367c6945428"
+  "hash": "bee7ed2d30442907abf4fb9f156036bbc1bc5b7cd6b28889384298e47877276f"
 }
